@@ -1,0 +1,17 @@
+# Web Service: NodePort exposes the PHP app outside the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-service
+  namespace: default
+  labels:
+    app: web
+spec:
+  type: NodePort
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080
+      protocol: TCP

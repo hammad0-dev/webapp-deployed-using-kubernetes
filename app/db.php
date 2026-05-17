@@ -1,8 +1,8 @@
 <?php
-$host = "db";
+$host = "mysql-service";
 $user = "root";
-$password = "password";
-$dbname = "studentsdb";
+$password = "rootpassword";
+$dbname = "studentdb";
 
 $conn = new mysqli($host, $user, $password, $dbname);
 
