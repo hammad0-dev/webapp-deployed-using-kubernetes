@@ -1,4 +1,3 @@
-# MySQL Service: ClusterIP for in-cluster access from PHP pods
 apiVersion: v1
 kind: Service
 metadata:
@@ -11,6 +10,7 @@ spec:
   selector:
     app: mysql
   ports:
-    - port: 3306
+    - name: mysql
+      port: 3306
       targetPort: 3306
       protocol: TCP

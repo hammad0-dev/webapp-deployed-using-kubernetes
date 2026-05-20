@@ -1,4 +1,3 @@
-# MySQL Deployment: single replica with persistent data volume
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,14 +18,31 @@ spec:
       containers:
         - name: mysql
           image: mysql:5.7
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3306
+              name: mysql
           env:
             - name: MYSQL_ROOT_PASSWORD
-              value: "rootpassword"
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_ROOT_PASSWORD
             - name: MYSQL_DATABASE
-              value: "studentdb"
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_DATABASE
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_PASSWORD
           volumeMounts:
             - name: mysql-storage
               mountPath: /var/lib/mysql
@@ -37,6 +53,22 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mysqladmin ping -h 127.0.0.1 -u root -p$MYSQL_ROOT_PASSWORD
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mysqladmin ping -h 127.0.0.1 -u root -p$MYSQL_ROOT_PASSWORD
+            initialDelaySeconds: 15
+            periodSeconds: 5
       volumes:
         - name: mysql-storage
           persistentVolumeClaim:

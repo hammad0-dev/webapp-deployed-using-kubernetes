@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Registration</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Student Registration System</h1>
+      <p>Register students and view records stored in MySQL</p>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Register New Student</h2>
+        <form id="studentForm">
+          <div class="form-group">
+            <label for="name">Student Name</label>
+            <input type="text" id="name" name="name" placeholder="Enter full name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="student@university.edu" required>
+          </div>
+          <div class="form-group">
+            <label for="department">Department</label>
+            <input type="text" id="department" name="department" placeholder="e.g. Computer Science" required>
+          </div>
+          <button type="submit" class="btn-primary">Register Student</button>
+        </form>
+        <p id="formMessage" class="message" hidden></p>
+      </section>
+
+      <section class="card">
+        <div class="section-header">
+          <h2>Registered Students</h2>
+          <button id="refreshBtn" class="btn-secondary">Refresh</button>
+        </div>
+        <div id="studentsTable"></div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Jenkins CI/CD &bull; Kubernetes &bull; MySQL &bull; Prometheus/Grafana</p>
+    </footer>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,14 +1,15 @@
-# PersistentVolumeClaim: binds the web stack MySQL pod to mysql-pv
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pvc
   namespace: default
+  labels:
+    app: mysql
 spec:
   accessModes:
     - ReadWriteOnce
   storageClassName: manual
+  volumeName: mysql-pv
   resources:
     requests:
       storage: 1Gi
-  volumeName: mysql-pv

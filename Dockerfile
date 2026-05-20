@@ -1,7 +1,12 @@
-FROM php:8.2-apache
+FROM node:18-alpine
 
-RUN docker-php-ext-install mysqli
+WORKDIR /app
 
-COPY app/ /var/www/html/
+COPY app/package*.json ./
+RUN npm install --production
 
-EXPOSE 80
+COPY app/ ./
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
