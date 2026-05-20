@@ -1,6 +1,6 @@
 # Student Registration Web App — Jenkins CI/CD on Kubernetes
 
-Node.js + Express + MySQL student registration application deployed with Jenkins, Docker, and Kubernetes. Includes Prometheus and Grafana monitoring via Helm.
+Node.js + Express + MySQL student registration application deployed with Jenkins, Docker, and Kubernetes. Prometheus and Grafana are installed via Helm in the Jenkins pipeline.
 
 ## Project Structure
 
@@ -17,18 +17,15 @@ Node.js + Express + MySQL student registration application deployed with Jenkins
 ├── .dockerignore
 ├── Jenkinsfile
 ├── README.md
-├── k8s/
-│   ├── mysql-secret.yaml
-│   ├── mysql-pv.yaml
-│   ├── mysql-pvc.yaml
-│   ├── mysql-deployment.yaml
-│   ├── mysql-service.yaml
-│   ├── app-deployment.yaml
-│   ├── app-service.yaml
-│   └── app-hpa.yaml
-└── monitoring/
-    ├── prometheus-values.yaml
-    └── grafana-dashboard.json
+└── k8s/
+    ├── mysql-secret.yaml
+    ├── mysql-pv.yaml
+    ├── mysql-pvc.yaml
+    ├── mysql-deployment.yaml
+    ├── mysql-service.yaml
+    ├── app-deployment.yaml
+    ├── app-service.yaml
+    └── app-hpa.yaml
 ```
 
 ## Features
@@ -84,7 +81,7 @@ Deploy order (also used in Jenkinsfile):
 | MySQL service | `mysql-service:3306` |
 | App image | `hammad0dev/webapp-deployed-using-kubernetes:latest` |
 | App NodePort | `30030` |
-| HPA | Scales `app-deployment` from 1 to 7 pods at 70% memory utilization |
+| HPA | Scales `app-deployment` from 1 to 5 pods at 50% CPU utilization |
 
 Ensure `/data/mysql` exists on the cluster node for the `hostPath` volume.
 
@@ -106,19 +103,21 @@ Ensure `/data/mysql` exists on the cluster node for the `hostPath` volume.
 1. Code Fetch
 2. Docker Build
 3. Docker Push
-4. Kubernetes Deploy
-5. Prometheus Grafana Setup (Helm)
+4. Kubernetes Deploy (PV/PVC, MySQL, App, HPA)
+5. Prometheus Grafana Setup (Helm only)
 
 Install on Jenkins agent: Docker, `kubectl`, `helm`.
 
-## Monitoring
+**Monitoring stage (Helm):**
 
-After the pipeline runs:
+```bash
+kubectl create namespace monitoring
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring
+```
 
-- **Prometheus:** `http://<node-ip>:30090`
-- **Grafana:** `http://<node-ip>:30300` (login: `admin` / `admin`)
-
-Import `monitoring/grafana-dashboard.json` in Grafana (**Dashboards → Import**).
+Access Grafana/Prometheus services from the `monitoring` namespace after install (`kubectl get svc -n monitoring`).
 
 ## GitHub Webhook
 

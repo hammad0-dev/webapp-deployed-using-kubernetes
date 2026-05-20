@@ -82,22 +82,16 @@ pipeline {
                         set -e
                         export KUBECONFIG="$KUBECONFIG_FILE"
 
-                        helm repo add prometheus-community https://prometheus-community.github.io/helm-charts || true
+                        kubectl create namespace monitoring || true
+
+                        helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
                         helm repo update
 
-                        helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
-                          --namespace monitoring \
-                          --create-namespace \
-                          -f monitoring/prometheus-values.yaml \
-                          --wait \
-                          --timeout 10m
+                        helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
+                          --namespace monitoring
 
                         kubectl get pods -n monitoring
                         kubectl get svc -n monitoring
-
-                        echo "Prometheus NodePort: http://<node-ip>:30090"
-                        echo "Grafana NodePort:    http://<node-ip>:30300"
-                        echo "Grafana Login: admin / admin"
                     '''
                 }
             }
