@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'hammad0dev/webapp-deployed-using-kubernetes'
+        DOCKER_IMAGE = 'hammad01011/webapp-deployed-using-kubernetes'
         DOCKER_TAG   = 'latest'
         FULL_IMAGE   = "${DOCKER_IMAGE}:${DOCKER_TAG}"
         GITHUB_REPO  = 'https://github.com/hammad0-dev/webapp-deployed-using-kubernetes.git'

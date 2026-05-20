@@ -58,13 +58,13 @@ export DB_NAME=studentdb
 ## Docker
 
 ```bash
-docker build -t hammad0dev/webapp-deployed-using-kubernetes:latest .
+docker build -t hammad01011/webapp-deployed-using-kubernetes:latest .
 docker run -p 3000:3000 \
   -e DB_HOST=host.docker.internal \
   -e DB_USER=appuser \
   -e DB_PASSWORD=apppassword \
   -e DB_NAME=studentdb \
-  hammad0dev/webapp-deployed-using-kubernetes:latest
+  hammad01011/webapp-deployed-using-kubernetes:latest
 ```
 
 ## Kubernetes
@@ -79,7 +79,7 @@ Deploy order (also used in Jenkinsfile):
 | Resource | Details |
 |----------|---------|
 | MySQL service | `mysql-service:3306` |
-| App image | `hammad0dev/webapp-deployed-using-kubernetes:latest` |
+| App image | `hammad01011/webapp-deployed-using-kubernetes:latest` |
 | App NodePort | `30030` |
 | HPA | Scales `app-deployment` from 1 to 5 pods at 50% CPU utilization |
 
