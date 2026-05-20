@@ -65,10 +65,6 @@ pipeline {
                         kubectl get hpa app-hpa
                         kubectl get pods
                         kubectl get svc
-
-                        echo "Application URL: http://<node-ip>:30030"
-                        echo "Health check:    http://<node-ip>:30030/health"
-                        echo "Metrics:         http://<node-ip>:30030/metrics"
                     '''
                 }
             }
@@ -84,11 +80,13 @@ pipeline {
 
                         kubectl create namespace monitoring || true
 
-                        helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+                        helm repo add prometheus-community https://prometheus-community.github.io/helm-charts || true
                         helm repo update
 
                         helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
-                          --namespace monitoring
+                          --namespace monitoring \
+                          --wait \
+                          --timeout 10m
 
                         kubectl get pods -n monitoring
                         kubectl get svc -n monitoring
