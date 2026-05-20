@@ -58,9 +58,11 @@ pipeline {
 
                         kubectl apply -f k8s/app-deployment.yaml
                         kubectl apply -f k8s/app-service.yaml
+                        kubectl apply -f k8s/app-hpa.yaml
 
                         kubectl rollout status deployment/app-deployment --timeout=180s
 
+                        kubectl get hpa app-hpa
                         kubectl get pods
                         kubectl get svc
 
