@@ -118,7 +118,7 @@ helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --n
 ```
 
 Access Grafana/Prometheus services from the `monitoring` namespace after install (`kubectl get svc -n monitoring`).
-
+af
 ## GitHub Webhook
 
 Configure a GitHub webhook pointing to your Jenkins job URL to trigger builds on push to `main`.
