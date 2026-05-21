@@ -83,26 +83,16 @@ pipeline {
                 }
             }
         }
-       stage('Start Port Forwarding') {
+       stage('Expose Services') {
     steps {
         withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
             sh '''
                 export KUBECONFIG="$KUBECONFIG_FILE"
 
-                pkill -f "kubectl port-forward svc/app-service" || true
-                pkill -f "kubectl --namespace monitoring port-forward svc/prometheus-grafana" || true
+                kubectl patch svc prometheus-grafana -n monitoring -p '{"spec":{"type":"NodePort","ports":[{"port":80,"targetPort":3000,"nodePort":30300}]}}' || true
 
-                nohup kubectl port-forward svc/app-service 30030:3000 --address=0.0.0.0 > app-portforward.log 2>&1 &
-
-                nohup kubectl --namespace monitoring port-forward svc/prometheus-grafana 3000:80 --address=0.0.0.0 > grafana-portforward.log 2>&1 &
-
-                sleep 5
-
-                echo "Application is accessible on port 30030"
-                echo "Grafana is accessible on port 3000"
-                echo "Grafana username: admin"
-                echo "Get Grafana password:"
-                echo "kubectl get secret -n monitoring prometheus-grafana -o jsonpath='{.data.admin-password}' | base64 --decode ; echo"
+                kubectl get svc app-service
+                kubectl get svc prometheus-grafana -n monitoring
             '''
         }
     }
