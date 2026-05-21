@@ -27,7 +27,7 @@ pipeline {
 
         stage('Docker Push') {
             steps {
-                echo 'Logging in to DockerHub and pushing image...'
+                echo 'Pushing Docker image to DockerHub...'
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
                         appImage.push()
@@ -47,10 +47,6 @@ pipeline {
                         kubectl apply -f k8s/mysql-secret.yaml
                         kubectl apply -f k8s/mysql-pv.yaml
                         kubectl apply -f k8s/mysql-pvc.yaml
-
-                        kubectl get pv
-                        kubectl get pvc mysql-pvc
-
                         kubectl apply -f k8s/mysql-deployment.yaml
                         kubectl apply -f k8s/mysql-service.yaml
 
@@ -62,9 +58,10 @@ pipeline {
 
                         kubectl rollout status deployment/app-deployment --timeout=180s
 
-                        kubectl get hpa app-hpa
                         kubectl get pods
                         kubectl get svc
+                        kubectl get pvc
+                        kubectl get hpa
                     '''
                 }
             }
@@ -72,7 +69,7 @@ pipeline {
 
         stage('Prometheus Grafana Setup') {
             steps {
-                echo 'Installing Prometheus and Grafana using Helm...'
+                echo 'Starting Prometheus and Grafana using Helm...'
                 withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
                     sh '''
                         set -e
@@ -103,7 +100,7 @@ pipeline {
         }
 
         failure {
-            echo "Pipeline failed. Check the Jenkins stage logs."
+            echo "Pipeline failed. Check Jenkins logs."
         }
     }
 }
