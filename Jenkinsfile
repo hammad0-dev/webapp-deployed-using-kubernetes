@@ -97,5 +97,28 @@ pipeline {
         }
     }
 }
+        stage('Start Access Ports') {
+    steps {
+        withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
+            sh '''
+                export KUBECONFIG="$KUBECONFIG_FILE"
+
+                pkill -f "kubectl port-forward svc/app-service" || true
+                pkill -f "kubectl.*prometheus-grafana" || true
+
+                nohup kubectl port-forward svc/app-service 30030:3000 --address=0.0.0.0 > /tmp/app-portforward.log 2>&1 &
+
+                nohup kubectl --namespace monitoring port-forward svc/prometheus-grafana 30300:80 --address=0.0.0.0 > /tmp/grafana-portforward.log 2>&1 &
+
+                sleep 5
+
+                echo "Application access port started on 30030"
+                echo "Grafana access port started on 30300"
+                echo "Check app log: /tmp/app-portforward.log"
+                echo "Check grafana log: /tmp/grafana-portforward.log"
+            '''
+        }
+    }
+}
     }
 }
