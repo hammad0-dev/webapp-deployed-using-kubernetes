@@ -25,16 +25,26 @@ pipeline {
             }
         }
 
-        stage('Docker Push') {
-            steps {
-                echo 'Pushing Docker image to DockerHub...'
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
-                        appImage.push()
-                    }
-                }
-            }
+        stage('Docker Build') {
+    steps {
+        echo 'Building Docker image...'
+        sh '''
+            docker build -t ${FULL_IMAGE} .
+        '''
+    }
+}
+
+stage('Docker Push') {
+    steps {
+        echo 'Pushing Docker image to DockerHub...'
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+            sh '''
+                echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                docker push ${FULL_IMAGE}
+            '''
         }
+    }
+}
 
         stage('Kubernetes Deploy') {
             steps {
