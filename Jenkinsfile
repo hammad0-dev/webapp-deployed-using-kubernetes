@@ -83,5 +83,25 @@ pipeline {
                 }
             }
         }
+        stage('Access Information') {
+            steps {
+                                echo '''
+                        Application access:
+                        kubectl port-forward svc/app-service 30030:3000 --address=0.0.0.0
+                        
+                        Grafana access:
+                        kubectl --namespace monitoring port-forward svc/prometheus-grafana 3000:80 --address=0.0.0.0
+                        
+                        Grafana password:
+                        kubectl get secret -n monitoring prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+                        
+                        Grafana username:
+                        admin
+                        
+                        Dashboard ID:
+                        17685
+                        '''
+            }
+        }
     }
 }
