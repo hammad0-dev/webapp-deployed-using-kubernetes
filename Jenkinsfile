@@ -11,47 +11,31 @@ pipeline {
     stages {
         stage('Code Fetch') {
             steps {
-                echo 'Fetching source code from GitHub...'
                 git branch: 'main', url: "${GITHUB_REPO}"
             }
         }
 
         stage('Docker Build') {
             steps {
-                echo 'Building Docker image...'
-                script {
-                    appImage = docker.build("${FULL_IMAGE}", '.')
+                sh 'docker build -t ${FULL_IMAGE} .'
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push ${FULL_IMAGE}
+                    '''
                 }
             }
         }
 
-        stage('Docker Build') {
-    steps {
-        echo 'Building Docker image...'
-        sh '''
-            docker build -t ${FULL_IMAGE} .
-        '''
-    }
-}
-
-stage('Docker Push') {
-    steps {
-        echo 'Pushing Docker image to DockerHub...'
-        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-            sh '''
-                echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                docker push ${FULL_IMAGE}
-            '''
-        }
-    }
-}
-
         stage('Kubernetes Deploy') {
             steps {
-                echo 'Deploying MySQL and application to Kubernetes...'
                 withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
                     sh '''
-                        set -e
                         export KUBECONFIG="$KUBECONFIG_FILE"
 
                         kubectl apply -f k8s/mysql-secret.yaml
@@ -79,10 +63,8 @@ stage('Docker Push') {
 
         stage('Prometheus Grafana Setup') {
             steps {
-                echo 'Starting Prometheus and Grafana using Helm...'
                 withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
                     sh '''
-                        set -e
                         export KUBECONFIG="$KUBECONFIG_FILE"
 
                         kubectl create namespace monitoring || true
@@ -100,17 +82,6 @@ stage('Docker Push') {
                     '''
                 }
             }
-        }
-    }
-
-    post {
-        success {
-            echo "Pipeline succeeded successfully."
-            echo "Docker Image: ${FULL_IMAGE}"
-        }
-
-        failure {
-            echo "Pipeline failed. Check Jenkins logs."
         }
     }
 }
