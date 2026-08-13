@@ -8,7 +8,7 @@ Node.js + Express + MySQL student registration application deployed with Jenkins
 ├── app/
 │   ├── server.js
 │   ├── package.json
-│   ├── package-lock.json
+│   ├── package-lock.jso
 │   └── public/
 │       ├── index.html
 │       ├── style.css
