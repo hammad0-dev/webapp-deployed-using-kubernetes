@@ -1,4 +1,4 @@
-# Student Registration Web App — Jenkins CI/CD on KuberneteNode.js + Express + MySQL student registration application deployed with Jenkins, Docker, and Kubernetes. Prometheus and Grafana are installed via Helm in the Jenkins pipeline.
+ Student Registration Web App — Jenkins CI/CD on KuberneteNode.js + Express + MySQL student registration application deployed with Jenkins, Docker, and Kubernetes. Prometheus and Grafana are installed via Helm in the Jenkins pipeline.
 
 ## Project Structure
 
